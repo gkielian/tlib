@@ -65,12 +65,12 @@ target_ulong HELPER(ldstub)(uint32_t addr)
     mmu_idx = env->psrs;
     if (unlikely(env->tlb_table[mmu_idx][page_index].addr_write != (addr & (TARGET_PAGE_MASK)))) {
         /* the page is not in the TLB : fill it */
-        tlb_fill(env, addr, 1, mmu_idx, retaddr, 0);
+        tlb_fill(env, addr, 1, mmu_idx, retaddr, 0, 1);
     }
 
     if (unlikely(env->tlb_table[mmu_idx][page_index].addr_read != (addr & (TARGET_PAGE_MASK)))) {
         /* the page is not in the TLB : fill it */
-        tlb_fill(env, addr, 0, mmu_idx, retaddr, 0);
+        tlb_fill(env, addr, 0, mmu_idx, retaddr, 0, 1);
     }
 
     physaddr = addr + env->tlb_table[mmu_idx][page_index].addend;
@@ -93,12 +93,12 @@ target_ulong HELPER(swap)(target_ulong value, uint32_t addr)
     mmu_idx = env->psrs;
     if (unlikely(env->tlb_table[mmu_idx][page_index].addr_write != (addr & (TARGET_PAGE_MASK)))) {
         /* the page is not in the TLB : fill it */
-        tlb_fill(env, addr, 1, mmu_idx, retaddr, 0);
+        tlb_fill(env, addr, 1, mmu_idx, retaddr, 0, 4);
     }
 
     if (unlikely(env->tlb_table[mmu_idx][page_index].addr_read != (addr & (TARGET_PAGE_MASK)))) {
         /* the page is not in the TLB : fill it */
-        tlb_fill(env, addr, 0, mmu_idx, retaddr, 0);
+        tlb_fill(env, addr, 0, mmu_idx, retaddr, 0, 4);
     }
 
     physaddr = addr + env->tlb_table[mmu_idx][page_index].addend;
@@ -1658,7 +1658,7 @@ void do_unaligned_access(target_ulong addr, int is_write, int is_user, void *ret
    NULL, it means that the function was called in C code (i.e. not
    from generated code or from helper.c) */
 /* XXX: fix it to restore all registers */
-void tlb_fill(CPUState *env, target_ulong addr, int is_write, int mmu_idx, void *retaddr, int no_page_fault)
+void tlb_fill(CPUState *env, target_ulong addr, int is_write, int mmu_idx, void *retaddr, int no_page_fault, int access_width)
 {
     int ret;
     ret = cpu_handle_mmu_fault(env, addr, is_write, mmu_idx, 1);

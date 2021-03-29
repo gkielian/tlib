@@ -4740,7 +4740,7 @@ void helper_boundl(target_ulong a0, int v)
    NULL, it means that the function was called in C code (i.e. not
    from generated code or from helper.c) */
 /* XXX: fix it to restore all registers */
-void tlb_fill(CPUState *env1, target_ulong addr, int is_write, int mmu_idx, void *retaddr, int no_page_fault)
+void tlb_fill(CPUState *env1, target_ulong addr, int is_write, int mmu_idx, void *retaddr, int no_page_fault, int access_width)
 {
     TranslationBlock *tb;
     int ret;

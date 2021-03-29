@@ -168,7 +168,7 @@ do_unaligned_access:
             do_unaligned_access(addr, READ_ACCESS_TYPE, mmu_idx, retaddr);
         }
 #endif
-        tlb_fill(cpu, addr, READ_ACCESS_TYPE, mmu_idx, retaddr, 0);
+        tlb_fill(cpu, addr, READ_ACCESS_TYPE, mmu_idx, retaddr, 0, DATA_SIZE);
         goto redo;
     }
 
@@ -217,7 +217,7 @@ do_unaligned_access:
         }
     } else {
         /* the page is not in the TLB : fill it */
-        tlb_fill(cpu, addr, READ_ACCESS_TYPE, mmu_idx, retaddr, 0);
+        tlb_fill(cpu, addr, READ_ACCESS_TYPE, mmu_idx, retaddr, 0, DATA_SIZE);
         goto redo;
     }
     return res;
@@ -328,7 +328,7 @@ do_unaligned_access:
             do_unaligned_access(addr, 1, mmu_idx, retaddr);
         }
 #endif
-        tlb_fill(cpu, addr, 1, mmu_idx, retaddr, 0);
+        tlb_fill(cpu, addr, 1, mmu_idx, retaddr, 0, DATA_SIZE);
         goto redo;
     }
 
@@ -373,7 +373,7 @@ do_unaligned_access:
         }
     } else {
         /* the page is not in the TLB : fill it */
-        tlb_fill(cpu, addr, 1, mmu_idx, retaddr, 0);
+        tlb_fill(cpu, addr, 1, mmu_idx, retaddr, 0, DATA_SIZE);
         goto redo;
     }
 }
