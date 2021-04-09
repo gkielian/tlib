@@ -613,6 +613,8 @@ extern dirty_ram_t dirty_ram;
 #define TLB_NOTDIRTY      (1 << 4)
 /* Set if TLB entry is an IO callback.  */
 #define TLB_MMIO          (1 << 5)
+/* TLB entry should be recalculated before each use - e.g., it contains PMP regions that needs to be checked */
+#define TLB_ONE_SHOT      (1 << 6)
 
 #define CODE_DIRTY_FLAG   0x02
 

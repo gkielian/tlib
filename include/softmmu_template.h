@@ -115,8 +115,16 @@ DATA_TYPE REGPARM glue(glue(__ld, SUFFIX), MMUSUFFIX)(target_ulong addr, int mmu
     /* test if there is match for unaligned or IO access */
     /* XXX: could done more in memory macro in a non portable way */
     index = (addr >> TARGET_PAGE_BITS) & (CPU_TLB_SIZE - 1);
-redo:
+
     tlb_addr = cpu->tlb_table[mmu_idx][index].ADDR_READ;
+    if(tlb_addr != -1 && (tlb_addr & TLB_ONE_SHOT) != 0) {
+        tlb_flush_page(cpu, addr);
+    }
+
+redo:
+    tlb_addr = cpu->tlb_table[mmu_idx][index].ADDR_READ & ~TLB_ONE_SHOT;
+    addend = cpu->tlb_table[mmu_idx][index].addend;
+
     if ((addr & TARGET_PAGE_MASK) == (tlb_addr & (TARGET_PAGE_MASK | TLB_INVALID_MASK))) {
         if (tlb_addr & ~TARGET_PAGE_MASK) {
             /* IO access */
@@ -153,7 +161,6 @@ do_unaligned_access:
                 do_unaligned_access(addr, READ_ACCESS_TYPE, mmu_idx, retaddr);
             }
 #endif
-            addend = cpu->tlb_table[mmu_idx][index].addend;
             res = glue(glue(ld, USUFFIX), _raw)((uint8_t *)(uintptr_t)(addr + addend));
             if(unlikely(cpu->tlib_is_on_memory_access_enabled != 0))
             {
@@ -186,8 +193,16 @@ static DATA_TYPE glue(glue(slow_ld, SUFFIX), MMUSUFFIX)(target_ulong addr, int m
     uintptr_t addend;
 
     index = (addr >> TARGET_PAGE_BITS) & (CPU_TLB_SIZE - 1);
-redo:
+
     tlb_addr = cpu->tlb_table[mmu_idx][index].ADDR_READ;
+    if(tlb_addr != -1 && (tlb_addr & TLB_ONE_SHOT) != 0) {
+        tlb_flush_page(cpu, addr);
+    }
+
+redo:
+    tlb_addr = cpu->tlb_table[mmu_idx][index].ADDR_READ & ~TLB_ONE_SHOT;
+    addend = cpu->tlb_table[mmu_idx][index].addend;
+
     if ((addr & TARGET_PAGE_MASK) == (tlb_addr & (TARGET_PAGE_MASK | TLB_INVALID_MASK))) {
         if (tlb_addr & ~TARGET_PAGE_MASK) {
             /* IO access */
@@ -212,7 +227,6 @@ do_unaligned_access:
             res = (DATA_TYPE)res;
         } else {
             /* unaligned/aligned access in the same page */
-            addend = cpu->tlb_table[mmu_idx][index].addend;
             res = glue(glue(ld, USUFFIX), _raw)((uint8_t *)(uintptr_t)(addr + addend));
         }
     } else {
@@ -276,8 +290,16 @@ void REGPARM glue(glue(__st, SUFFIX), MMUSUFFIX)(target_ulong addr, DATA_TYPE va
     register_address_access(cpu, addr);
 
     index = (addr >> TARGET_PAGE_BITS) & (CPU_TLB_SIZE - 1);
-redo:
+
     tlb_addr = cpu->tlb_table[mmu_idx][index].addr_write;
+    if(tlb_addr != -1 && (tlb_addr & TLB_ONE_SHOT) != 0) {
+        tlb_flush_page(cpu, addr);
+    }
+
+redo:
+    tlb_addr = cpu->tlb_table[mmu_idx][index].addr_write & ~TLB_ONE_SHOT;
+    addend = cpu->tlb_table[mmu_idx][index].addend;
+
     if ((addr & TARGET_PAGE_MASK) == (tlb_addr & (TARGET_PAGE_MASK | TLB_INVALID_MASK))) {
         if (tlb_addr & ~TARGET_PAGE_MASK) {
             /* IO access */
@@ -313,7 +335,6 @@ do_unaligned_access:
                 do_unaligned_access(addr, 1, mmu_idx, retaddr);
             }
 #endif
-            addend = cpu->tlb_table[mmu_idx][index].addend;
             glue(glue(st, SUFFIX), _raw)((uint8_t *)(uintptr_t)(addr + addend), val);
             if(unlikely(cpu->tlib_is_on_memory_access_enabled != 0))
             {
@@ -344,8 +365,16 @@ static void glue(glue(slow_st, SUFFIX), MMUSUFFIX)(target_ulong addr, DATA_TYPE 
     uintptr_t addend;
 
     index = (addr >> TARGET_PAGE_BITS) & (CPU_TLB_SIZE - 1);
-redo:
+
     tlb_addr = cpu->tlb_table[mmu_idx][index].addr_write;
+    if(tlb_addr != -1 && (tlb_addr & TLB_ONE_SHOT) != 0) {
+        tlb_flush_page(cpu, addr);
+    }
+
+redo:
+    tlb_addr = cpu->tlb_table[mmu_idx][index].addr_write & ~TLB_ONE_SHOT;
+    addend = cpu->tlb_table[mmu_idx][index].addend;
+
     if ((addr & TARGET_PAGE_MASK) == (tlb_addr & (TARGET_PAGE_MASK | TLB_INVALID_MASK))) {
         if (tlb_addr & ~TARGET_PAGE_MASK) {
             /* IO access */
@@ -368,7 +397,6 @@ do_unaligned_access:
             }
         } else {
             /* aligned/unaligned access in the same page */
-            addend = cpu->tlb_table[mmu_idx][index].addend;
             glue(glue(st, SUFFIX), _raw)((uint8_t *)(uintptr_t)(addr + addend), val);
         }
     } else {

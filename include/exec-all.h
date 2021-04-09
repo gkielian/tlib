@@ -252,7 +252,7 @@ static inline tb_page_addr_t get_page_addr_code(CPUState *env1, target_ulong add
     if (unlikely(env1->tlb_table[mmu_idx][page_index].addr_code != (addr & TARGET_PAGE_MASK))) {
         ldub_code(addr);
     }
-    pd = env1->tlb_table[mmu_idx][page_index].addr_code & ~TARGET_PAGE_MASK;
+    pd = env1->tlb_table[mmu_idx][page_index].addr_code & ~(TARGET_PAGE_MASK | TLB_ONE_SHOT);
     if (pd > IO_MEM_ROM && !(pd & IO_MEM_ROMD)) {
         cpu_abort(env1, "Trying to execute code outside RAM or ROM at 0x" TARGET_FMT_lx "\n", addr);
     }

@@ -1260,6 +1260,15 @@ void tlb_set_page(CPUState *env, target_ulong vaddr, target_phys_addr_t paddr, i
     CPUTLBEntry *te;
     target_phys_addr_t iotlb;
 
+    address = vaddr;
+
+    if(size < TARGET_PAGE_SIZE)
+    {
+        size = TARGET_PAGE_SIZE;
+        // in this special case we need to check MMU/PMP on each access
+        address |= TLB_ONE_SHOT;
+    }
+
     assert(size >= TARGET_PAGE_SIZE);
     if (size != TARGET_PAGE_SIZE) {
         tlb_add_large_page(env, vaddr, size);
@@ -1271,7 +1280,6 @@ void tlb_set_page(CPUState *env, target_ulong vaddr, target_phys_addr_t paddr, i
         pd = p->phys_offset;
     }
 
-    address = vaddr;
     if ((pd & ~TARGET_PAGE_MASK) > IO_MEM_ROM && !(pd & IO_MEM_ROMD)) {
         /* IO memory case (romd handled later) */
         address |= TLB_MMIO;
