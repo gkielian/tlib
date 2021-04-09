@@ -63,5 +63,6 @@ target_ulong pmpcfg_csr_read(CPUState *env, uint32_t reg_index);
 void pmpaddr_csr_write(CPUState *env, uint32_t addr_index, target_ulong val);
 target_ulong pmpaddr_csr_read(CPUState *env, uint32_t addr_index);
 bool pmp_hart_has_privs(CPUState *env, target_ulong addr, target_ulong size, pmp_priv_t priv);
+int pmp_find_overlapping(CPUState *env, target_ulong addr, target_ulong size, int starting_index);
 
 #endif

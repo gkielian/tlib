@@ -225,6 +225,28 @@ static int pmp_is_in_range(CPUState *env, int pmp_index, target_ulong addr)
  * Public Interface
  */
 
+int pmp_find_overlapping(CPUState *env, target_ulong addr, target_ulong size, int starting_index)
+{
+    int i;
+    target_ulong pmp_sa;
+    target_ulong pmp_ea;
+
+    for (i = starting_index; i < MAX_RISCV_PMPS; i++) {
+        pmp_sa = env->pmp_state.addr[i].sa;
+        pmp_ea = env->pmp_state.addr[i].ea;
+
+        if (pmp_sa < addr) {
+            if (pmp_ea >= addr) {
+                return i;
+            }
+        } else if (pmp_sa <= addr + size - 1) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
 /*
  * Check if the address has required RWX privs to complete desired operation
  */
