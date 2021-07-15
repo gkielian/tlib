@@ -55,6 +55,9 @@ target_ulong helper_vsetvl(CPUState *env, target_ulong rd, target_ulong rs1, tar
 
 void helper_vmv_ivi(CPUState *env, uint32_t vd, int64_t imm)
 {
+    if (V_IDX_INVALID(vd)) {
+        helper_raise_exception(env, RISCV_EXCP_ILLEGAL_INST);
+    }
     const target_ulong dst_eew = env->vsew;
     for (int ei = env->vstart; ei < env->vl; ++ei) {
         switch (dst_eew) {
@@ -79,6 +82,9 @@ void helper_vmv_ivi(CPUState *env, uint32_t vd, int64_t imm)
 
 void helper_vmv_ivi_m(CPUState *env, uint32_t vd, int64_t imm)
 {
+    if (V_IDX_INVALID(vd)) {
+        helper_raise_exception(env, RISCV_EXCP_ILLEGAL_INST);
+    }
     const target_ulong dst_eew = env->vsew;
     for (int ei = env->vstart; ei < env->vl; ++ei) {
         if (!env->vma && !(V(0)[ei >> 3] & (1 << (ei & 0x7)))) {
