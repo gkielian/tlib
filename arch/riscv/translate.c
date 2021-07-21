@@ -1888,6 +1888,7 @@ static void gen_v(DisasContext *dc, uint32_t opc, int rd, int rs1, int rs2, int 
     }
     uint8_t funct6 = extract32(dc->opcode, 26, 6);
     uint8_t vm = extract32(dc->opcode, 25, 1);
+    int64_t simm5;
 
     switch (opc) {
         case OPC_RISC_V_IVV:
@@ -1896,7 +1897,7 @@ static void gen_v(DisasContext *dc, uint32_t opc, int rd, int rs1, int rs2, int 
             kill_unknown(dc, RISCV_EXCP_ILLEGAL_INST);
             break;
         case OPC_RISC_V_IVI:
-            int64_t simm5 = (((int8_t)(rs1) << 3) >> 3);
+            simm5 = (((int8_t)(rs1) << 3) >> 3);
             gen_v_opivi(dc, funct6, rd, simm5, rs2, vm);
             break;
         case OPC_RISC_V_IVX:
