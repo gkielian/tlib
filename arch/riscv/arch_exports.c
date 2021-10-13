@@ -256,7 +256,7 @@ static bool check_vector_access(uint32_t regn, uint32_t idx)
         return 1;
     }
     return 0;
-} 
+}
 
 uint64_t tlib_get_vector(uint32_t regn, uint32_t idx)
 {
@@ -271,12 +271,17 @@ uint64_t tlib_get_vector(uint32_t regn, uint32_t idx)
         return ((uint16_t *)V(regn))[idx];
     case 32:
         return ((uint32_t *)V(regn))[idx];
-    case 64: 
+    case 64:
         return ((uint64_t *)V(regn))[idx];
     default:
         tlib_printf(LOG_LEVEL_ERROR, "Unsupported SEW (%d)", cpu->vsew);
         return 0;
     }
+}
+
+uint32_t tlib_get_rvv_opcode_count(uint32_t rvv_opcode_index)
+{
+    return cpu->rvv_opcode_count[rvv_opcode_index];
 }
 
 void tlib_set_vector(uint32_t regn, uint32_t idx, uint64_t value)
@@ -299,7 +304,7 @@ void tlib_set_vector(uint32_t regn, uint32_t idx, uint64_t value)
     case 32:
         ((uint32_t *)V(regn))[idx] = value;
         break;
-    case 64: 
+    case 64:
         ((uint64_t *)V(regn))[idx] = value;
         break;
     default:

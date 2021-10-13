@@ -62,6 +62,7 @@ typedef struct CPUState CPUState;
 
 #include "cpu-common.h"
 #include "pmp.h"
+#include "rvv_opcode_map.h"
 
 // +---------------------------------------+
 // | ALL FIELDS WHICH STATE MUST BE STORED |
@@ -72,6 +73,7 @@ struct CPUState {
     target_ulong gpr[32];
     uint64_t fpr[32]; /* assume both F and D extensions */
     uint8_t vr[32 * (VLEN_MAX / 8)];
+    uint32_t rvv_opcode_count[NUM_RVV_OPCODES];
     target_ulong pc;
 
     target_ulong frm;

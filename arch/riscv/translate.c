@@ -29,6 +29,12 @@ static TCGv cpu_vstart;
 
 #include "tb-helper.h"
 
+// TODO(gkielian): have this selected as a build parameter
+#define RVV_OPC_COUNT true
+#ifdef RVV_OPC_COUNT
+#include "rvv_inst_counter.h"
+#endif
+
 void translate_init(void)
 {
     int i;
@@ -824,6 +830,10 @@ static void gen_v_load(DisasContext *dc, uint32_t opc, uint32_t rest, uint32_t v
     tcg_gen_movi_i32(t_rs2, rs2);
     tcg_gen_movi_i32(t_nf, nf);
 
+    #ifdef RVV_OPC_COUNT
+    rvv_opcode_count_v_load(env, dc, opc, vm, mew, nf, width);
+    #endif
+
     switch (opc) {
     case OPC_RISC_VL_US: // unit-stride
         switch (MASK_OP_V_LOAD_US(dc->opcode)) {
@@ -1046,6 +1056,10 @@ static void gen_v_store(DisasContext *dc, uint32_t opc, uint32_t rest, uint32_t 
     tcg_gen_movi_i32(t_rs2, rs2);
     tcg_gen_movi_i32(t_nf, nf);
 
+
+    #ifdef RVV_OPC_COUNT
+    rvv_opcode_count_v_store(dc, opc, rest, width);
+    #endif
 
     switch (opc) {
     case OPC_RISC_VS_US: // unit-stride
@@ -1864,6 +1878,10 @@ static void gen_v_cfg(DisasContext *dc, uint32_t opc, int rd, int rs1, int rs2, 
         tcg_gen_movi_i32(vec_imm, 0);
     }
 
+    #ifdef RVV_OPC_COUNT
+    rvv_opcode_count_v_cfg(dc, opc);
+    #endif
+
     switch (opc) {
         case OPC_RISC_VSETVL:
             gen_helper_vsetvl(dest, cpu_env, rd_pass, imm_rs1, source1, source2,
@@ -1906,6 +1924,10 @@ static void gen_v_opivv(DisasContext *dc, uint8_t funct6, int vd, int vs1, int v
     tcg_gen_movi_i32(t_vd, vd);
     tcg_gen_movi_i32(t_vs1, vs1);
     tcg_gen_movi_i32(t_vs2, vs2);
+
+    #ifdef RVV_OPC_COUNT
+    rvv_opcode_count_v_opivv(dc, funct6, vm);
+    #endif
 
     switch (funct6) {
     case RISC_V_FUNCT_ADD:
