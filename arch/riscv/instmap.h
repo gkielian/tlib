@@ -18,6 +18,9 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef INSTMAP_H_
+#define INSTMAP_H_
+
 #define MASK_OP_MAJOR(op) (op & 0x7F)
 enum {
     /* rv32i, rv64i, rv32m */
@@ -579,3 +582,5 @@ enum {
 #define GET_C_RS2(inst)          extract32(inst, 2, 5)
 #define GET_C_RS1S(inst)         (8 + extract32(inst, 7, 3))
 #define GET_C_RS2S(inst)         (8 + extract32(inst, 2, 3))
+
+#endif // INSTMAP_H_
