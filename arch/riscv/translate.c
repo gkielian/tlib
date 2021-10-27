@@ -29,6 +29,8 @@ static TCGv cpu_vstart;
 
 #include "tb-helper.h"
 
+#include "inst_counter.h"
+
 void translate_init(void)
 {
     int i;
@@ -4473,6 +4475,10 @@ static void decode_RV32_64G(CPUState *env, DisasContext *dc)
     rd = GET_RD(dc->opcode);
     imm = GET_IMM(dc->opcode);
     rm = GET_RM(dc->opcode);
+
+    if (env->enable_inst_count) {
+      rvv_opcode_sieve(env, dc->opcode, op, rm);
+    }
 
     switch (op) {
     case OPC_RISC_LUI:
