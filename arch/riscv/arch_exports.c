@@ -279,6 +279,26 @@ uint64_t tlib_get_vector(uint32_t regn, uint32_t idx)
     }
 }
 
+uint32_t tlib_get_rvv_opcode_count(uint32_t rvv_opcode_index)
+{
+    return cpu->rvv_opcode_count[rvv_opcode_index];
+}
+
+uint32_t tlib_get_rvv_opcode_count_flag()
+{
+    return cpu->enable_inst_count;
+}
+
+void tlib_enable_rvv_opcode_count()
+{
+    cpu->enable_inst_count = true;
+}
+
+void tlib_disable_rvv_opcode_count()
+{
+    cpu->enable_inst_count = false;
+}
+
 void tlib_set_vector(uint32_t regn, uint32_t idx, uint64_t value)
 {
     if (check_vector_access(regn, idx)) {
